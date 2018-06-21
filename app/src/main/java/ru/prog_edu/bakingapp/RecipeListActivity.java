@@ -22,14 +22,14 @@ import ru.prog_edu.bakingapp.model.recipes.Recipe;
 import ru.prog_edu.bakingapp.model.recipes.RecipesInterface;
 import ru.prog_edu.bakingapp.utilities.NetworkState;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
 public class RecipeListActivity extends AppCompatActivity implements RecipeCardsFragment.OnRecipeClickListener {
 
-    private List<Recipe> recipeList;
+    private ArrayList<Recipe> recipeList;
     private boolean mTwoPane;
     private final Set<String> ingredientsList = new HashSet<>();
     private static final String PREF_KEY_INGREDIENTS = "ingredientData";
@@ -39,6 +39,9 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeCards
             .addConverterFactory(GsonConverterFactory.create());
     private static final Retrofit retrofit = builder.build();
     private CountingIdlingResource countingIdlingResource;
+    private RecipeCardsFragment recipeCardsFragment;
+    private final String RECIPE_CARDS_FRAGMENT_TAG = "recipe_cards_fragment_tag";
+    private final String RECIPE_LIST = "recipe_list";
 
     private void setIdlingResource(CountingIdlingResource countingIdlingResource) {
         this.countingIdlingResource = countingIdlingResource;
@@ -68,10 +71,17 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeCards
 
         mTwoPane = findViewById(R.id.control_content_fragment) != null;
         countingIdlingResource.increment();
-        if(isOnline){
-            getAllRecipes();
-        }else{
-            Toast.makeText(this, "No Internet connection", Toast.LENGTH_LONG).show();
+
+        if(savedInstanceState!=null){
+            recipeCardsFragment = (RecipeCardsFragment)getSupportFragmentManager()
+                    .findFragmentByTag(RECIPE_CARDS_FRAGMENT_TAG);
+            recipeList = savedInstanceState.getParcelableArrayList(RECIPE_LIST);
+        }else if(recipeCardsFragment==null){
+            if(isOnline){
+                getAllRecipes();
+            }else{
+                Toast.makeText(this, "No Internet connection", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -94,27 +104,28 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeCards
 
     private void getAllRecipes(){
         final RecipesInterface recipesInterface = retrofit.create(RecipesInterface.class);
-        Call<List<Recipe>> recipeCall = recipesInterface.getRecipes();
-        recipeCall.enqueue(new Callback<List<Recipe>>() {
+        Call<ArrayList<Recipe>> recipeCall = recipesInterface.getRecipes();
+        recipeCall.enqueue(new Callback<ArrayList<Recipe>>() {
             @Override
-            public void onResponse(@NonNull Call<List<Recipe>> call, @NonNull Response<List<Recipe>> response) {
+            public void onResponse(@NonNull Call<ArrayList<Recipe>> call, @NonNull Response<ArrayList<Recipe>> response) {
                 if(response.isSuccessful()){
                     recipeList = response.body();
                     if (recipeList != null) {
                         Log.i("numberOfRecipes", String.valueOf(recipeList.size()));
                     }
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    RecipeCardsFragment fragment;
 
                     new RecipeCardsFragment();
-                    fragment = RecipeCardsFragment.newInstance(recipeList, mTwoPane);
-                    transaction.add(R.id.first_content_fragment, fragment);
+                    RecipeCardsFragment fragment = RecipeCardsFragment.newInstance(recipeList, mTwoPane);
+                    transaction.replace(R.id.first_content_fragment, fragment, RECIPE_CARDS_FRAGMENT_TAG);
                     transaction.commit();
                     countingIdlingResource.decrement();
                 }else{
                     try {
                         if (response.errorBody() != null) {
-                            Log.e("ERROR BODY", response.errorBody().string());
+                            if (response.errorBody() != null) {
+                                Log.e("ERROR BODY", response.errorBody().string());
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -123,9 +134,15 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeCards
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<Recipe>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ArrayList<Recipe>> call, @NonNull Throwable t) {
                 Log.e("Failure: ", t.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(RECIPE_LIST,  recipeList);
     }
 }

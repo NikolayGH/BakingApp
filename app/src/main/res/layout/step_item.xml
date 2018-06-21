@@ -6,16 +6,27 @@
     android:background="@drawable/rounded_corners_item">
 
     <TextView
-        android:id="@+id/tv_step_short_description"
+        android:id="@+id/tv_step_serial_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/middle_margin"
-        android:layout_marginEnd="@dimen/middle_margin"
-        android:layout_marginStart="@dimen/middle_margin"
-        android:layout_marginTop="@dimen/middle_margin"
-        android:textAlignment="center"
-        android:textSize="@dimen/min_text_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/middle_text_size"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageStep"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/image_of_step_of_recipe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -23,16 +34,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_step_serial_number"
+        android:id="@+id/tv_step_short_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/min_margin"
-        android:layout_marginStart="@dimen/little_margin"
-        android:layout_marginTop="@dimen/min_margin"
-        android:textAlignment="textStart"
-        android:textSize="@dimen/middle_text_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:textSize="@dimen/min_text_size"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageStep"
         app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

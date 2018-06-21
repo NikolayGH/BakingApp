@@ -20,6 +20,8 @@ import ru.prog_edu.bakingapp.model.recipes.Step;
 public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSelectedStepListener {
 
     private static final String BUNDLE_RECIPE_CONTENT = "bundle_recipe_content";
+    private static final String COUNTER_INGREDIENT_POSITION = "counterIngredientPosition";
+    private static final String COUNTER_STEP_POSITION = "counterStepPosition";
 
     @BindView(R.id.ingredients_recycler)RecyclerView ingredientsRecyclerView;
     @BindView(R.id.steps_recycler)RecyclerView stepsRecyclerView;
@@ -28,7 +30,14 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
     private List<Step> stepsList = null;
     private List<Ingredient> ingredientsList = null;
 
-    OnStepClickListener stepCallback;
+    private OnStepClickListener stepCallback;
+
+    private int currentIngredientVisiblePosition;
+    private int currentStepVisiblePosition;
+    private RecyclerView.LayoutManager ingredientsLayoutManager;
+    private RecyclerView.LayoutManager stepsLayoutManager;
+    private int temporaryVariableIngredientPosition;
+    private int temporaryVariableStepPosition;
 
     public interface OnStepClickListener{
         void onStepSelected(int stepPosition);
@@ -60,6 +69,15 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        if (savedInstanceState == null) {
+            currentIngredientVisiblePosition = 0;
+            currentStepVisiblePosition = 0;
+        } else {
+            currentIngredientVisiblePosition = savedInstanceState.getInt(COUNTER_INGREDIENT_POSITION, 0);
+            currentStepVisiblePosition = savedInstanceState.getInt(COUNTER_STEP_POSITION, 0);
+        }
+
         Recipe recipe;
         if (getArguments() != null && getArguments().containsKey(BUNDLE_RECIPE_CONTENT)) {
             recipe = getArguments().getParcelable(BUNDLE_RECIPE_CONTENT);
@@ -82,11 +100,15 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
 
         View rootView = inflater.inflate(R.layout.fragment_detail_recipe, container, false);
         unbinder = ButterKnife.bind(this, rootView);
-        RecyclerView.LayoutManager ingredientsLayoutManager = new LinearLayoutManager(getContext());
+        ingredientsLayoutManager = new LinearLayoutManager(getContext());
+        ingredientsLayoutManager.scrollToPosition(currentIngredientVisiblePosition);
         ingredientsRecyclerView.setLayoutManager(ingredientsLayoutManager);
+        ingredientsRecyclerView.getLayoutManager().scrollToPosition(currentIngredientVisiblePosition);
 
-        RecyclerView.LayoutManager stepsLayoutManager = new LinearLayoutManager(getContext());
+        stepsLayoutManager = new LinearLayoutManager(getContext());
+
         stepsRecyclerView.setLayoutManager(stepsLayoutManager);
+        stepsRecyclerView.getLayoutManager().scrollToPosition(currentStepVisiblePosition);
 
         RecyclerView.ItemDecoration itemDecoration =
                 new ru.prog_edu.bakingapp.DividerItemDecoration(5);
@@ -113,5 +135,29 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //outState.putInt("counter", mCounter);
+
+        currentIngredientVisiblePosition = temporaryVariableIngredientPosition;
+        outState.putInt(COUNTER_INGREDIENT_POSITION, currentIngredientVisiblePosition);
+
+        currentStepVisiblePosition = temporaryVariableStepPosition;
+        outState.putInt(COUNTER_STEP_POSITION, currentStepVisiblePosition);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        temporaryVariableIngredientPosition = ((LinearLayoutManager)ingredientsRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+
+        temporaryVariableStepPosition = ((LinearLayoutManager)stepsRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+
     }
 }

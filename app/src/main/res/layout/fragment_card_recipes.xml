@@ -9,10 +9,10 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/catalog_recycler"
         android:layout_width="match_parent"
-        android:layout_height="551dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="@dimen/min_margin"
-        android:layout_marginEnd="@dimen/max_margin"
-        android:layout_marginStart="@dimen/max_margin"
+        android:layout_marginEnd="@dimen/middle_margin"
+        android:layout_marginStart="@dimen/middle_margin"
         android:layout_marginTop="@dimen/min_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

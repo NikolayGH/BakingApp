@@ -56,6 +56,10 @@ public class Step implements Parcelable {
         }
     };
 
+    public String getThumbnailURL() {
+        return thumbnailURL;
+    }
+
     public Integer getId() {
         return id;
     }

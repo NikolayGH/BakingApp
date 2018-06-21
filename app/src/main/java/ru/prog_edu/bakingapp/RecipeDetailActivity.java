@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import android.widget.Toast;
 import ru.prog_edu.bakingapp.model.recipes.Recipe;
 
 /**
@@ -20,6 +19,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
     private boolean mTwoPane;
     private Recipe selectedRecipe;
+    private static final String SELECTED_RECIPE = "selectedRecipe";
+    private String currentFragmentInOnePane;
+    private static final String RECIPE_DETAIL_FRAGMENT = "recipeDetailFragment";
+    private static final String STEP_DETAIL_FRAGMENT = "stepDetailFragment";
+    private static final String RECIPE_DETAIL_FRAGMENT_TAG = "recipeDetailFragmentTag";
+    private static final String STEP_DETAIL_FRAGMENT_TAG = "stepDetailFragmentTag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +33,41 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mTwoPane = findViewById(R.id.second_content_fragment) != null;
-
+        mTwoPane = findViewById(R.id.second_content_fragment)!=null;
         selectedRecipe = getIntent().getParcelableExtra(Recipe.class.getCanonicalName());
 
-        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-        new RecipeDetailFragment();
-        RecipeDetailFragment recipeDetailFragment = RecipeDetailFragment.newInstance(selectedRecipe);
-        transaction.replace(R.id.sample_content_fragment, recipeDetailFragment);
-        //transaction.addToBackStack(null);
-        transaction.commit();
+        if(savedInstanceState!=null){
+            selectedRecipe = savedInstanceState.getParcelable(SELECTED_RECIPE);
+            currentFragmentInOnePane = savedInstanceState.getString("currentFragmentInOnePane");
+            if (currentFragmentInOnePane != null) {
+                if(currentFragmentInOnePane.equals(RECIPE_DETAIL_FRAGMENT)){
+                    RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager()
+                            .findFragmentByTag(RECIPE_DETAIL_FRAGMENT_TAG);
+                }else{
+                    StepDetailFragment stepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
+                            .findFragmentByTag(STEP_DETAIL_FRAGMENT_TAG);
+                }
+            }
+        }else{
+            FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+            new RecipeDetailFragment();
+            RecipeDetailFragment recipeDetailFragment = RecipeDetailFragment.newInstance(selectedRecipe);
+            transaction.replace(R.id.sample_content_fragment, recipeDetailFragment, RECIPE_DETAIL_FRAGMENT_TAG);
+            transaction.commit();
+            currentFragmentInOnePane = RECIPE_DETAIL_FRAGMENT;
 
-        if(mTwoPane){
-            FragmentTransaction transaction1 = this.getSupportFragmentManager().beginTransaction();
-            new StepDetailFragment();
-            StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(selectedRecipe, 0);
-            transaction1.replace(R.id.second_content_fragment, stepDetailFragment);
-            //transaction1.addToBackStack(null);
-            transaction1.commit();
-        }
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            if(mTwoPane){
+                FragmentTransaction transaction1 = this.getSupportFragmentManager().beginTransaction();
+                new StepDetailFragment();
+                StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(selectedRecipe, 0);
+                transaction1.replace(R.id.second_content_fragment, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG);
+                //transaction1.addToBackStack(null);
+                transaction1.commit();
+            }
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
     }
 
@@ -70,16 +87,24 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             FragmentTransaction transaction1 = this.getSupportFragmentManager().beginTransaction();
             new StepDetailFragment();
             StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(selectedRecipe, stepPosition);
-            transaction1.replace(R.id.second_content_fragment, stepDetailFragment);
+            transaction1.replace(R.id.second_content_fragment, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG);
             transaction1.addToBackStack(null);
             transaction1.commit();
         }else {
             FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
             new StepDetailFragment();
             StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(selectedRecipe, stepPosition);
-            transaction.replace(R.id.sample_content_fragment, stepDetailFragment);
+            transaction.replace(R.id.sample_content_fragment, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG);
             transaction.addToBackStack(null);
             transaction.commit();
+            currentFragmentInOnePane = STEP_DETAIL_FRAGMENT;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SELECTED_RECIPE, selectedRecipe);
+        outState.putString("currentFragmentInOnePane", currentFragmentInOnePane);
     }
 }

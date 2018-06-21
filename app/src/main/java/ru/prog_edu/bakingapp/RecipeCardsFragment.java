@@ -29,6 +29,10 @@ public class RecipeCardsFragment extends Fragment implements RecipesAdapter.OnSe
     private OnRecipeClickListener mCallback;
     private boolean mTwoPane;
 
+    private int currentVisiblePosition;
+    private RecyclerView.LayoutManager recipesLayoutManager;
+    private Parcelable listState;
+
     public interface OnRecipeClickListener{
         void onRecipeSelected(int position);
     }
@@ -59,6 +63,14 @@ public class RecipeCardsFragment extends Fragment implements RecipesAdapter.OnSe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
+        if (savedInstanceState == null) {
+            currentVisiblePosition = 0;
+        } else {
+            currentVisiblePosition = savedInstanceState.getInt("recipe_counter", 0);
+        }
+
         if (getArguments() != null && getArguments().containsKey(BUNDLE_CONTENT)) {
             this.recipeList = getArguments().getParcelableArrayList(BUNDLE_CONTENT);
             this.mTwoPane = getArguments().getBoolean(BUNDLE_SCREEN_SIZE);
@@ -79,18 +91,19 @@ public class RecipeCardsFragment extends Fragment implements RecipesAdapter.OnSe
         }else{
             numberOfColumns =1;
         }
-
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), numberOfColumns));
+        recipesLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(recipesLayoutManager);
+        mRecyclerView.getLayoutManager().scrollToPosition(currentVisiblePosition);
         RecyclerView.ItemDecoration itemDecoration =
                 new ru.prog_edu.bakingapp.DividerItemDecoration(30);
         mRecyclerView.addItemDecoration(itemDecoration);
 
         RecipesAdapter mRecipesAdapter = new RecipesAdapter(recipeList, this);
         mRecyclerView.setAdapter(mRecipesAdapter);
-
+        mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
         mRecipesAdapter.notifyDataSetChanged();
         ButterKnife.bind(rootView);
-
         return rootView;
     }
 
@@ -103,5 +116,12 @@ public class RecipeCardsFragment extends Fragment implements RecipesAdapter.OnSe
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+         currentVisiblePosition = ((GridLayoutManager)mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        outState.putInt("recipe_counter", currentVisiblePosition);
     }
 }

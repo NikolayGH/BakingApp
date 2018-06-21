@@ -6,7 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -41,6 +44,14 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.imageRecipe.setVisibility(View.GONE);
+        String imageUrl = recipeList.get(position).getImage();
+        if(!(imageUrl.equals(""))){
+            holder.imageRecipe.setVisibility(View.VISIBLE);
+            Picasso.get()
+                    .load(imageUrl)
+                    .into(holder.imageRecipe);
+        }
         String recipeName = recipeList.get(position).getName();
         holder.textViewName.setText(recipeName);
     }
@@ -52,6 +63,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.tv_recipe_name)TextView textViewName;
+        @BindView(R.id.imageRecipe)ImageView imageRecipe;
 
         ViewHolder(View itemView) {
             super(itemView);

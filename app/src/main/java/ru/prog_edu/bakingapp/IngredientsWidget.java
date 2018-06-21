@@ -16,7 +16,6 @@ public class IngredientsWidget extends AppWidgetProvider {
                                         int appWidgetId) {
         RemoteViews remoteView = getViewForBiggerWidget(context);
         appWidgetManager.updateAppWidget(appWidgetId, remoteView);
-
     }
 
     private static RemoteViews getViewForBiggerWidget(Context context) {
