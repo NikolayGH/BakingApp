@@ -69,7 +69,8 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(false);
+
         if (savedInstanceState == null) {
             currentIngredientVisiblePosition = 0;
             currentStepVisiblePosition = 0;
@@ -153,11 +154,23 @@ public class RecipeDetailFragment extends Fragment implements StepsAdapter.OnSel
     public void onPause() {
         super.onPause();
 
+        if(getResources().getBoolean(R.bool.large_land)){
+            setRetainInstance(true);
+        }else{
+            setRetainInstance(false);
+        }
+
+
         temporaryVariableIngredientPosition = ((LinearLayoutManager)ingredientsRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
 
         temporaryVariableStepPosition = ((LinearLayoutManager)stepsRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
 
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 }

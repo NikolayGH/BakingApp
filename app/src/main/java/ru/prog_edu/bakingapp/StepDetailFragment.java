@@ -62,6 +62,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
         if (getArguments() != null && getArguments().containsKey(BUNDLE_RECIPE_STEP)){
             this.recipe = getArguments().getParcelable(BUNDLE_RECIPE_STEP);
             this.stepId = getArguments().getInt(BUNDLE_STEP);
@@ -83,10 +84,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             position = savedInstanceState.getLong("position");
             playWhenReady = savedInstanceState.getBoolean("playWhenReady");
         }
-        //проверить на устройстве
-        if(getResources().getBoolean(R.bool.land_only)){
-            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+
+
 
         View rootView = inflater.inflate(R.layout.fragment_detail_step, container, false);
         simpleExoPlayerView = rootView.findViewById(R.id.playerView);

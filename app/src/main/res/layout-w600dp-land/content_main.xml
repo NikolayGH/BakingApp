@@ -5,31 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".RecipeDetailActivity"
+    tools:context=".RecipeListActivity"
 
-    tools:showIn="@layout/default_activity_recipe_detail">
+    tools:showIn="@layout/activity_recipe_list">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/second_content_fragment"
-        android:layout_width="0dp"
+        android:id="@+id/first_content_fragment"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/sample_content_fragment"
+        app:layout_constraintEnd_toStartOf="@+id/control_content_fragment"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".RecipeDetailActivity" />
+        tools:context=".RecipeListActivity" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/sample_content_fragment"
+        android:id="@+id/control_content_fragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/second_content_fragment"
+        app:layout_constraintStart_toEndOf="@+id/first_content_fragment"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".RecipeDetailActivity" />
+        tools:context=".RecipeListActivity" />
 
 
 </android.support.constraint.ConstraintLayout>
